@@ -14,7 +14,7 @@ const squareTypes = {
 };
 const directions = {
     ArrowUp: -10,
-    ArrowGown: 10,
+    ArrowDown: 10,
     ArrowRight: 1,
     ArrowLeft: -1,
 };
@@ -27,15 +27,43 @@ let boardSquares;
 let emptySquares;
 let moveInterval;
 
+// rellena cada cuadrado del tablero
+// @params
+// square: posicion del cuadrado,
+// type: tipo de cuadrado (emptySquare, snakeSquare, foodSquare)
+const drawSquare = (square, type) => {
+    boardSquares[row][column] = squareTypes[type];
+}
+
+const createBoard = () => {
+    boardSquares.forEach( (row, rowIndex) => {
+        row.forEach((column, columnIndex) => {
+            const squareValue = `${rowIndex}${columnIndex}`;
+            const squareElement = document.createElement('div');
+            squareElement.setAttribute('class', 'square emptySquare');
+            squareElement.setAttribute('id', squareValue);
+            board.appendChild(squareElement);
+            emptySquares.push(squareValue);
+        })
+    })
+};
+
 const setGame = () => {
-    snake = ['20', '01', '02', '03'];
+    snake = ['00', '01', '02', '03'];
     score = snake.length;
-    direction = ArrowRight;
+    direction = 'ArrowRight';
     boardSquares = Array.from(Array(boardSize), () => new Array(boardSize).fill(squareTypes.emptySquare));
+    console.log(boardSquares);
+    board.innerHTML = '';
+    emptySquares = [];
+    createBoard();
 }
 
 const startGame = () => {
     setGame();
+    gameOverSign.style.display = 'none';
+    startButton.disabled = true;
+    drawSnake();
 }
 
 startButton.addEventListener('click', startGame);
