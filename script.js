@@ -27,12 +27,61 @@ let boardSquares;
 let emptySquares;
 let moveInterval;
 
+const drawSnake = () => {
+    snake.forEach((square) => {
+        drawSquare(square, 'snakeSquare');
+    });
+}
+
 // rellena cada cuadrado del tablero
 // @params
 // square: posicion del cuadrado,
 // type: tipo de cuadrado (emptySquare, snakeSquare, foodSquare)
 const drawSquare = (square, type) => {
+    const row = parseInt(square[0]); // Extraer el índice de la fila
+    const column = parseInt(square[1]); // Extraer el índice de la columna
     boardSquares[row][column] = squareTypes[type];
+    const squareElement = document.getElementById(square);
+    squareElement.setAttribute('class', `square ${type}`);
+
+    // condicional para agregar un square al array de emptySquares y eliminarlo si ya existe.
+    if(type === 'emptySquare') {
+        emptySquares.push(square);
+    } else {
+        if(emptySquares.indexOf(square) !== -1) {
+            emptySquares.splice(emptySquares.indexOf(square), 1);
+        }
+    }
+}
+
+const setDirection = newDirection => {
+    direction = newDirection;
+}
+// direcciones del snake.
+const directionEvent = key => {
+    switch(key.code) {
+        case 'ArrowUp':
+            direction !== 'ArrowDown' && setDirection(key.code)
+            break;
+        case 'ArrowDown':
+            direction !== 'ArrowUp' && setDirection(key.code)
+            break;
+        case 'ArrowRight':
+            direction !== 'ArrowLeft' && setDirection(key.code)
+            break;
+        case 'ArrowLeft':
+            direction !== 'ArrowRight' && setDirection(key.code)
+            break;
+    }
+}
+
+const createRandomFood = () => {
+    const randomEmptySquare = emptySquares[Math.floor(Math.random() * emptySquares.length)];
+    drawSquare(randomEmptySquare, 'foodSquare');
+}
+
+const updateScore = () => {
+    scoreBoard.innerText = score;
 }
 
 const createBoard = () => {
@@ -64,6 +113,9 @@ const startGame = () => {
     gameOverSign.style.display = 'none';
     startButton.disabled = true;
     drawSnake();
+    updateScore();
+    createRandomFood();
+    document.addEventListener('keydown', directionEvent);
 }
 
 startButton.addEventListener('click', startGame);
